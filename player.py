@@ -66,8 +66,6 @@ class Player:
 		for t in range(self.horizon):
 			var_name = "l_bat n°"+str(t)
 			l_bat[t] = pulp.LpVariable(var_name,-self.pMax,self.pMax) # la mise dans la batterie est limitée par pMax
-			constraint_name = "power_limit_l_bat n°"+str(t)
-			lp += l_bat[t]-self.data[t]<=self.pMax,constraint_name
 
 			var_name = "l_bat_plus n°"+str(t)
 			l_bat_plus[t] = pulp.LpVariable(var_name,0, None)
@@ -125,8 +123,12 @@ class Player:
 
 		show(row(p_prix,p_prod,p_batt))
 
+		l_bat_aff = np.zeros(self.horizon)
 
-		return pulp.value(lp.objective)
+		for t in range(self.horizon):
+			l_bat_aff[t]=l_bat[t].varValue
+
+		return l_bat_aff,pulp.value(lp.objective)
 
 	def take_decision(self, time):
 
